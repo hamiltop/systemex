@@ -1,0 +1,8 @@
+%{"bullet": {:git, "git://github.com/extend/bullet.git", "999f02f57c75edf7ddb5ed08b667ac6657418422", []},
+  "conform": {:package, "0.10.2"},
+  "cowboy": {:package, "1.0.0"},
+  "cowlib": {:package, "1.0.0"},
+  "exrm": {:package, "0.14.2"},
+  "json": {:package, "0.3.0"},
+  "poison": {:package, "1.0.2"},
+  "ranch": {:package, "1.0.0"}}

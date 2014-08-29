@@ -1,0 +1,55 @@
+<html>
+<head>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/rxjs/2.3.5/rx.all.min.js"></script>
+        <script src="/bullet.js"></script>
+</head>
+<body>
+<span>
+CPU Utilization
+</span>
+<span id="cpu">
+no value yet
+</span>
+<span>
+Memory Utilization
+</span>
+<span id="mem">
+no value yet
+</span>
+<script>
+        $(function () {
+                var data = new Rx.Subject();
+                var s = $.bullet("ws://" + document.location.host + "/websocket");
+                s.onmessage = function(e) {
+                        var value = JSON.parse(e.data)
+                        data.onNext(value)
+                };
+
+                data.groupBy(
+                        function (x) { return x.type; },
+                        function (x) { return x.data; }
+                ).subscribe(
+                        function(obs) {
+                          switch(obs.key) {
+                                  case "cpu":
+                                    obs.subscribe(
+                                      function(el){
+                                        $("#cpu").text(el.utilization) 
+                                      }
+                                    );
+                                    break;
+                                  case "mem":
+                                    obs.subscribe(
+                                      function(el) {
+                                        $("#mem").text(el.utilization)
+                                      }
+                                    );
+                                    break;
+                                  default:
+                                    true
+                            }
+                        }
+                );
+        });
+</script> </body> </html>
