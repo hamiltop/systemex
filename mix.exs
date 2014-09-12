@@ -4,7 +4,7 @@ defmodule Systemex.Mixfile do
   def project do
     [app: :systemex,
      version: "0.0.1",
-     elixir: "~> 0.15.2-dev",
+     elixir: "~> 1.0.0",
      deps: deps]
   end
 
@@ -27,9 +27,9 @@ defmodule Systemex.Mixfile do
   # Type `mix help deps` for more examples and options
   defp deps do
     [
-      {:exrm, "~> 0.14.2"},
+      {:exrm, "~> 0.14.7"},
       {:cowboy, "~> 1.0.0", override: true},
-      {:poison, "~> 1.0.2"},
+      {:poison, "~> 1.1.1"},
       {:bullet, github: "extend/bullet"}
     ]
   end

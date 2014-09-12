@@ -11,7 +11,8 @@ defmodule Systemex.Connections do
         {connections, %{state | :latest => Map.put(latest, type, message)}}
       end)
     Enum.each pids, fn (pid) ->
-      send pid, {:text, message}
+      Systemex.WebsocketHandler.sync_notify(pid, {:text, message})
+      #send pid, {:text, message}
     end
   end
 
@@ -35,7 +36,7 @@ defmodule Systemex.Connections do
         latest
       end)
     Map.values(latest) |> Enum.each fn (el) ->
-      send pid, {:text, el}
+      Systemex.WebsocketHandler.sync_notify(pid, {:text, el})
     end
   end
 end
