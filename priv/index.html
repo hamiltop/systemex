@@ -23,11 +23,7 @@ no value yet
                 var s = $.bullet("ws://" + document.location.host + "/websocket");
                 s.onmessage = function(e) {
                         var value = JSON.parse(e.data)
-                        try {
-                                data.onNext(value.message)
-                        } finally {
-                                s.send(JSON.stringify({ref: value.ref}))
-                        }
+                        data.onNext(value)
                 };
 
                 data.groupBy(

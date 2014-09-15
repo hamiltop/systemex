@@ -3,8 +3,8 @@ defmodule Systemex.Mixfile do
 
   def project do
     [app: :systemex,
-     version: "0.0.1",
-     elixir: "~> 1.0.0",
+     version: "0.0.2",
+     #elixir: "~> 1.0.0",
      deps: deps]
   end
 
@@ -12,7 +12,7 @@ defmodule Systemex.Mixfile do
   #
   # Type `mix help compile.app` for more information
   def application do
-    [applications: [:logger, :cowboy, :os_mon, :bullet],
+    [applications: [:logger, :cowboy, :os_mon, :bullet, :poison, :streamz],
      mod: {Systemex, []}]
   end
 
@@ -30,7 +30,8 @@ defmodule Systemex.Mixfile do
       {:exrm, "~> 0.14.7"},
       {:cowboy, "~> 1.0.0", override: true},
       {:poison, "~> 1.1.1"},
-      {:bullet, github: "extend/bullet"}
+      {:bullet, github: "extend/bullet"},
+      {:streamz, github: "hamiltop/streamz", branch: "event_source_protocol"}
     ]
   end
 end

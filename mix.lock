@@ -5,4 +5,5 @@
   "exrm": {:package, "0.14.7"},
   "json": {:package, "0.3.0"},
   "poison": {:package, "1.1.1"},
-  "ranch": {:package, "1.0.0"}}
+  "ranch": {:package, "1.0.0"},
+  "streamz": {:git, "git://github.com/hamiltop/streamz.git", "ed4b7fbdf27a479e98be2ef55d1766b793df2c3c", [branch: "event_source_protocol"]}}

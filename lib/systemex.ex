@@ -13,7 +13,7 @@ defmodule Systemex do
       {:_, [
           {"/", :cowboy_static, {:priv_file, :systemex, "index.html"}},
           {"/bullet.js", :cowboy_static, {:priv_file, :bullet, "bullet.js"}},
-          {"/websocket", :bullet_handler, [handler: Systemex.WebsocketHandler]}
+          {"/websocket", :bullet_handler, [handler: Systemex.WebsocketHandler, sources: [Systemex.CPU.Stats, Systemex.Mem.Stats]]}
       ]}
     ]
 
@@ -25,8 +25,9 @@ defmodule Systemex do
     )
 
     children = [
-      worker(Systemex.Connections, []),
+      worker(Systemex.CPU.Stats, []),
       worker(Systemex.CPU, []),
+      worker(Systemex.Mem.Stats, []),
       worker(Systemex.Mem, []),
     ]
 

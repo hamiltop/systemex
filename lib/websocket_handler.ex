@@ -2,38 +2,52 @@ defmodule Systemex.WebsocketHandler do
 
   require Logger
 
-  def sync_notify(pid, message) do
-    {:ok, :ok} = :gen.call(pid, 'bullet', message, :infinity)
-  end
+  defmodule Handler do
+    use GenEvent
 
-  def init(_, request, _, _) do
-    Systemex.Connections.add self
-    Task.start_link fn ->
-      Systemex.Connections.send_latest_to_pid self
+    def init(pid) do
+      {:ok, pid}
     end
-    {:ok, request, %{}}
+
+    def handle_event(msg, pid) do
+      send pid, msg
+      {:ok, pid}
+    end
   end
 
-  def stream(message = "{\"ref\":\"" <> _, request, state) do
-    message = Poison.decode!(message)
-    {target, new_state} = Dict.pop(state, message["ref"])
-    :gen.reply target, :ok
-    {:ok, request, new_state}
+  def init(_, request, opts, _) do
+    sources = Keyword.get(opts, :sources, [])
+      |> Enum.flat_map &EventSource.add_handler(GenEvent.stream(&1), self)
+    {:ok, request, sources}
   end
 
-  def info({'bullet', from, {:text, message}}, request, state) do
-    ref = :binary.bin_to_list(:crypto.rand_bytes(16)) |> Enum.map(fn
-      (x) when x < 160 -> div(x, 16) + 48
-      (x) when x >= 160 and x < 256 -> ?a + (div(x, 16) - 10)
-    end) |> List.to_string
-    {:reply, Poison.encode!(%{message: message, ref: ref}), request, Dict.put(state, ref, from)}
+  def stream(_, request, state) do
+    {:ok, request, state}
   end
 
-  def info(msg, req, state) do
-    {:ok, req, state}
+  def info({_, tag, {:ack_notify, message}}, request, state) do
+    :gen.reply(tag, :ok)
+    reply(message, request, state)
   end
 
-  def terminate(_, _) do
+  def info({_, tag, {:ack_notify, message}}, request, state) do
+    :gen.reply(tag, :ok) # Until we have sync across websocket, this is the end of the road
+    reply(message, request, state)
+  end
+
+  def info({_, tag, {:notify, message}}, request, state) do
+    reply(message, request, state)
+  end
+
+  defp reply(message, request, state) do
+    data = Poison.encode!(message)
+    {:reply, data, request, state}
+  end
+
+  def terminate(_, sources) do
+    Enum.each sources, fn(connection) ->
+      EventSource.Connection.remove_handler(connection)
+    end
     :ok
   end
 end
